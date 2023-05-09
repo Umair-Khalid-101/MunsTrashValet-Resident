@@ -9,8 +9,8 @@ import { colors } from "../constans/colors";
 import { useStateContext } from "../context/index";
 
 export default function AccountSetting() {
-  const { user, storedCredentials } = useStateContext();
-  console.log("USER:", user);
+  const { storedCredentials } = useStateContext();
+  // console.log("USER:", storedCredentials);
   const navigation = useNavigation();
   const [loaded, setloaded] = useState(false);
 
@@ -28,13 +28,18 @@ export default function AccountSetting() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.nav}>
-        <TouchableOpacity>
-          <View>
-            <Back
-              style={styles.back}
-              onPress={() => navigation.navigate("TabNavigator")}
-            />
-          </View>
+        <TouchableOpacity
+          style={{
+            width: "30%",
+            // backgroundColor: "blue",
+            height: 50,
+          }}
+          onPress={() => navigation.navigate("TabNavigator")}
+        >
+          <Back
+            style={styles.back}
+            onPress={() => navigation.navigate("TabNavigator")}
+          />
         </TouchableOpacity>
         {loaded ? <Text style={styles.text1}>Account Setting</Text> : ""}
       </View>
@@ -84,7 +89,7 @@ export default function AccountSetting() {
         }}
       >
         {loaded ? <Text style={styles.text8}>Apartment #</Text> : ""}
-        {loaded && user?.apartment ? (
+        {loaded && storedCredentials?.apartment ? (
           <Text style={styles.text9}>{storedCredentials?.apartment}</Text>
         ) : (
           ""
@@ -201,7 +206,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 1,
     backgroundColor: "#D6D6D6",
-    marginTop: 50,
   },
   greyline2: {
     width: "90%",

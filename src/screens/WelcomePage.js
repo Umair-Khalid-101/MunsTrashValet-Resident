@@ -26,14 +26,13 @@ import Loader from "../components/Loader";
 import { useStateContext } from "../context";
 import { collection, query, where, getDocs, db } from "../services";
 
-let item;
-
 function WelcomePage(props) {
-  const { storedCredentials } = useStateContext();
+  const { storedCredentials, setonRouteValet } = useStateContext();
   const navigation = useNavigation();
   const [loaded, setloaded] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [item, setItem] = useState(null);
 
   const loadfonts = async () => {
     await Font.loadAsync({
@@ -45,6 +44,10 @@ function WelcomePage(props) {
   };
   useEffect(() => {
     loadfonts();
+    // getNotifications();
+    setInterval(() => {
+      getContinuousNotifs();
+    }, 5000);
   }, []);
 
   useFocusEffect(
@@ -53,8 +56,49 @@ function WelcomePage(props) {
     }, [])
   );
 
+  const getContinuousNotifs = async () => {
+    // console.log("Continuous Notifications...");
+    setData([]);
+    const myData = [];
+    const q = query(
+      collection(db, "notifications"),
+      where("sentTo", "==", storedCredentials?.propertyname)
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot?.empty) {
+      // Alert.alert("No Notifications sent yet!");
+      // setIsLoading(false);
+      return;
+    }
+
+    try {
+      querySnapshot?.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc?.id, " => ", doc?.data());
+        myData.push({
+          id: doc?.id,
+          NotifCount: doc?.data()?.NotifCount,
+          body: doc?.data()?.body,
+          sendingDate: doc?.data()?.sendingDate,
+          sendingTime: doc?.data()?.sendingTime,
+          sentBy: doc?.data()?.sentBy,
+          title: doc?.data()?.title,
+        });
+      });
+      let notifications = reverseArray(myData);
+      // console.log("NOTIFICATIONS:", notifications[0]);
+      setItem(notifications[0]);
+      setonRouteValet(notifications[0]?.sentBy);
+      setData(notifications);
+    } catch (error) {
+      Alert.alert(error);
+    }
+  };
+
   const getNotifications = async () => {
     // GET DETAILS OF NOTIFICATIONS
+    // console.log("Getting Notifications...");
     setIsLoading(true);
     setData([]);
     const myData = [];
@@ -85,8 +129,9 @@ function WelcomePage(props) {
         });
       });
       let notifications = reverseArray(myData);
-      console.log("NOTIFICATIONS:", notifications[0]);
-      item = notifications[0];
+      // console.log("NOTIFICATIONS:", notifications[0]);
+      setItem(notifications[0]);
+      setonRouteValet(notifications[0]?.sentBy);
       setData(notifications);
       setIsLoading(false);
     } catch (error) {
@@ -122,9 +167,22 @@ function WelcomePage(props) {
                 >
                   <View style={styles.logo}>
                     <Vector />
-                    <View style={styles.logotext}>
-                      <MunsTrashValet />
-                    </View>
+                    {loaded ? (
+                      <Text
+                        style={{
+                          // backgroundColor: "pink",
+                          alignSelf: "center",
+                          color: colors.primary,
+                          fontFamily: "Montserrat",
+                          marginTop: "2%",
+                          fontSize: 20,
+                        }}
+                      >
+                        Muns Trash Valet
+                      </Text>
+                    ) : (
+                      ""
+                    )}
                   </View>
                   <View
                     style={{
@@ -352,6 +410,55 @@ function WelcomePage(props) {
                   </View>
                 </TouchableOpacity>
               )}
+
+              <TouchableOpacity
+                style={styles.bluebox}
+                onPress={() => navigation.navigate("GenerateRequest")}
+              >
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View>
+                    {loaded ? (
+                      <Text style={styles.text6}>Request Pickup</Text>
+                    ) : (
+                      ""
+                    )}
+                    {loaded ? (
+                      <Text style={styles.text7}>
+                        Ask for Muns TrashValet pickup
+                      </Text>
+                    ) : (
+                      ""
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: 30,
+                      backgroundColor: colors.lightblue,
+                      marginRight: 20,
+                      borderWidth: 1,
+                      borderColor: colors.grey,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="bus-school"
+                      size={24}
+                      color="white"
+                    />
+                  </View>
+                </View>
+              </TouchableOpacity>
+
               {loaded ? (
                 <Text style={styles.recentnoti}>Follow Us On</Text>
               ) : (

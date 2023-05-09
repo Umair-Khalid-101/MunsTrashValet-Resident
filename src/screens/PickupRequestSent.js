@@ -69,7 +69,7 @@ export default function PickupRequestSent() {
             ""
           )}
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.buttoncontainer}
           onPress={() =>
             navigation.navigate("TabNavigator", { screen: "Pickup Request" })
@@ -112,7 +112,7 @@ export default function PickupRequestSent() {
               right: 20,
             }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={styles.back}
           onPress={() => navigation.navigate("TabNavigator")}

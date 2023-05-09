@@ -100,10 +100,10 @@ const TabNavigator = () => {
             options={{ headerShown: false }}
           />
           {/* <Tab.Screen
-        name="Pickup Request"
-        component={PickupRequest}
-        options={{ headerShown: false }}
-      /> */}
+            name="Pickup Request"
+            component={PickupRequest}
+            options={{ headerShown: false }}
+          /> */}
           <Tab.Screen
             name="Notification"
             component={Notification}

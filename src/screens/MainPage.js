@@ -74,13 +74,13 @@ const MainPage = () => {
       <View style={styles.button}>
         <TouchableOpacity
           style={styles.getstarted}
-          onPress={() => navigation.navigate("SignIn")}
+          onPress={() => navigation.replace("SignIn")}
         >
           {loaded ? <Text style={styles.getstartedtext}>Sign In</Text> : ""}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.getstarted2}
-          onPress={() => navigation.navigate("SignUp")}
+          onPress={() => navigation.replace("SignUp")}
         >
           {loaded ? <Text style={styles.getstartedtext2}>Sign Up</Text> : ""}
         </TouchableOpacity>

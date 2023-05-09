@@ -27,10 +27,10 @@ const SplashScreen = ({ navigation }) => {
         .then((result) => {
           if (result !== null) {
             setStoredCredentials(JSON.parse(result));
-            navigation.navigate("TabNavigator");
+            navigation.replace("TabNavigator");
           } else {
             setStoredCredentials(null);
-            navigation.navigate("SignIn");
+            navigation.replace("SignIn");
           }
         })
         .catch((error) => {
@@ -43,7 +43,7 @@ const SplashScreen = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <View style={styles.parent}>
           <Logo />
-          {loaded ? <Text style={styles.text1}>MUNS TRASHVALET</Text> : null}
+          {loaded ? <Text style={styles.text1}>MUNS TRASH VALET</Text> : null}
         </View>
 
         <LottieView

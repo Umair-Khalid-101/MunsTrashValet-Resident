@@ -19,18 +19,25 @@ import * as yup from "yup";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// ASYNC STORAGE
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useStateContext } from "../context";
 import {
   getAuth,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   addDoc,
   collection,
   db,
+  query,
+  where,
+  getDocs,
 } from "../services";
 import Loader from "../components/Loader";
 
 function SignUp(props) {
-  const { user, setUser } = useStateContext();
+  const { user, setUser, setStoredCredentials } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
   // const [pickerValue, setPickerValue] = useState("JavaScript");
   const navigation = useNavigation();
@@ -101,6 +108,17 @@ function SignUp(props) {
     }
   };
 
+  // PERSIST USER
+  const persistUser = async (credentials) => {
+    await AsyncStorage.setItem("userCredentials", JSON.stringify(credentials))
+      .then(() => {
+        setStoredCredentials(credentials);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <>
       {!isLoading && (
@@ -145,13 +163,59 @@ function SignUp(props) {
                 const password = values.password;
                 setIsLoading(true);
                 createUserWithEmailAndPassword(auth, email, password)
-                  .then((userCredential) => {
+                  .then(async (userCredential) => {
                     const user = userCredential.user;
                     setUser(user);
                     console.log(`Signed In as: ${user.uid}`);
-                    saveUser(values);
+                    await saveUser(values);
+
+                    // SIGN IN
+                    await signInWithEmailAndPassword(auth, email, password)
+                      .then(async (userCredential) => {
+                        const user = userCredential?.user;
+                        setUser(user);
+                        console.log(`Signed In as ${user?.uid}`);
+
+                        try {
+                          console.log(user?.email);
+                          const q = query(
+                            collection(db, "users"),
+                            where("email", "==", user?.email)
+                          );
+                          const querySnapshot = await getDocs(q);
+                          querySnapshot?.forEach(async (doc) => {
+                            // doc.data() is never undefined for query doc snapshots
+                            // console.log(doc.id, " => ", doc.data());
+                            const User = doc?.data();
+                            // console.log("USER:", User);
+                            setUser(User);
+                            await persistUser(User);
+                            if (User?.role === "resident") {
+                              // Alert.alert("Success!", "Signed In as Resident!");
+                              navigation.replace("TabNavigator");
+                            } else {
+                              Alert.alert(
+                                "Error!",
+                                "Make sure You're a Resident to Sign IN"
+                              );
+                            }
+                            setIsLoading(false);
+                          });
+                        } catch (error) {
+                          console.log(error);
+                          setIsLoading(false);
+                        }
+                      })
+                      .catch((error) => {
+                        const errorCode = error.code;
+                        // console.log(errorCode);
+                        const errorMessage = error.message;
+                        // console.log(errorMessage);
+                        Alert.alert("Error", "Wrong Email or Password!");
+                        setIsLoading(false);
+                      });
+                    reset();
                     setIsLoading(false);
-                    navigation.navigate("AccountCreated");
                   })
                   .catch((error) => {
                     const errorCode = error.code;
@@ -170,7 +234,7 @@ function SignUp(props) {
                     <View style={{ display: "flex", flexDirection: "row" }}>
                       <Back
                         style={styles.back}
-                        onPress={() => navigation.navigate("MainPage")}
+                        onPress={() => navigation.navigate("SignIn")}
                       />
                       {loaded ? (
                         <Text style={styles.SignIntext}>Sign Up</Text>

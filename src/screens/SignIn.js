@@ -114,7 +114,7 @@ function SignIn(props) {
             await persistUser(User);
             if (User?.role === "resident") {
               // Alert.alert("Success!", "Signed In as Resident!");
-              navigation.navigate("TabNavigator");
+              navigation.replace("TabNavigator");
             } else {
               Alert.alert("Error!", "Make sure You're a Resident to Sign IN");
             }
@@ -163,10 +163,10 @@ function SignIn(props) {
           <View style={styles.greyline}></View>
           <View style={styles.inputview}>
             <View style={{ display: "flex", flexDirection: "row" }}>
-              <Back
+              {/* <Back
                 style={styles.back}
                 onPress={() => navigation.navigate("MainPage")}
-              />
+              /> */}
               {loaded ? <Text style={styles.SignIntext}>Sign In</Text> : ""}
             </View>
             {loaded ? (
@@ -261,7 +261,7 @@ function SignIn(props) {
                     marginLeft: 5,
                     fontSize: 14,
                   }}
-                  onPress={() => navigation.navigate("SignUp")}
+                  onPress={() => navigation.replace("SignUp")}
                 >
                   Sign Up?
                 </Text>

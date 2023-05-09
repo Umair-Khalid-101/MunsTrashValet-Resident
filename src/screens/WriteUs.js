@@ -1,5 +1,4 @@
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -7,6 +6,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as Font from "expo-font";
 import Back from "../Svgs/Back";
 import React, { useState, useEffect } from "react";
@@ -72,13 +72,18 @@ export default function WriteUs() {
       {!isLoading && (
         <SafeAreaView style={styles.container}>
           <View style={styles.nav}>
-            <TouchableOpacity>
-              <View>
-                <Back
-                  style={styles.back}
-                  onPress={() => navigation.navigate("TabNavigator")}
-                />
-              </View>
+            <TouchableOpacity
+              style={{
+                width: "30%",
+                // backgroundColor: "blue",
+                height: 50,
+              }}
+              onPress={() => navigation.navigate("TabNavigator")}
+            >
+              <Back
+                style={styles.back}
+                onPress={() => navigation.navigate("TabNavigator")}
+              />
             </TouchableOpacity>
             {loaded ? <Text style={styles.text1}>Write To Us</Text> : ""}
           </View>
@@ -126,13 +131,11 @@ const styles = StyleSheet.create({
   },
   nav: {
     display: "flex",
-    marginTop: 60,
+    marginTop: "5%",
   },
   back: {
     alignSelf: "flex-start",
-
     position: "absolute",
-
     left: 16,
   },
   text1: {
@@ -145,7 +148,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 1,
     backgroundColor: "#D6D6D6",
-    marginTop: 50,
   },
   termsbox: {
     width: "93%",

@@ -31,15 +31,19 @@ import {
 import Loader from "../components/Loader";
 import { useStateContext } from "../context";
 
+// GLOBAL VARIABLES
+let docId;
+let User;
+
 export default function EditAccountSetting() {
-  const { user, setUser, storedCredentials, setStoredCredentials } =
-    useStateContext();
+  const { storedCredentials, setStoredCredentials } = useStateContext();
   const navigation = useNavigation();
   const [loaded, setloaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [cityname, setcityname] = useState(null);
   const [statename, setstatename] = useState(null);
   const [propertyname, setpropertyname] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   const data = [
     { value: "Independance Place" },
@@ -75,8 +79,6 @@ export default function EditAccountSetting() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    let docId;
-    let User;
     if (!statename) {
       data.statename = state[0].value;
     } else {
@@ -88,34 +90,43 @@ export default function EditAccountSetting() {
       data.cityname = cityname;
     }
     if (!propertyname) {
-      data.propertyname = user?.propertyname;
+      data.propertyname = storedCredentials?.propertyname;
     } else {
       data.propertyname = propertyname;
     }
 
     try {
-      console.log(user.email);
+      console.log(storedCredentials?.email);
       const q = query(
         collection(db, "users"),
-        where("email", "==", user.email)
+        where("email", "==", storedCredentials?.email)
       );
       const querySnapshot = await getDocs(q);
+
+      if (querySnapshot?.empty) {
+        console.log("NO DATA");
+        setIsLoading(false);
+        return;
+      }
+
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         // console.log(doc.id, " => ", doc.data());
         docId = doc.id;
         User = doc.data();
-        // console.log("USER:", User);
-        // setUser(User);
+        setUserData(User);
+        console.log("User:", User);
         setIsLoading(false);
       });
     } catch (error) {
-      console.log(error);
+      console.log("1-Error:", error);
       setIsLoading(false);
     }
 
     setIsLoading(true);
     try {
+      console.log(data);
+      console.log("userData:", userData);
       const washingtonRef = doc(db, "users", docId);
       await updateDoc(washingtonRef, {
         statename: data?.statename,
@@ -126,10 +137,10 @@ export default function EditAccountSetting() {
       User.statename = `${!statename ? state[0].value : statename}`;
       User.cityname = `${!cityname ? city[0].value : cityname}`;
       User.propertyname = `${
-        !propertyname ? user?.propertyname : propertyname
+        !propertyname ? storedCredentials?.propertyname : propertyname
       }`;
       User.apartment = data.apartment;
-      setUser(User);
+      console.log(User);
       AsyncStorage.setItem("userCredentials", JSON.stringify(User))
         .then(() => {
           setStoredCredentials(User);
@@ -139,10 +150,10 @@ export default function EditAccountSetting() {
         });
       setIsLoading(false);
     } catch (error) {
-      Alert.alert(error);
+      // Alert.alert(error);
+      console.log("2-Error:", error);
       setIsLoading(false);
     }
-    console.log(data);
   };
 
   return (
@@ -151,13 +162,17 @@ export default function EditAccountSetting() {
         <SafeAreaView style={styles.container}>
           <ScrollView>
             <View style={styles.nav}>
-              <TouchableOpacity>
-                <View>
-                  <Back
-                    style={styles.back}
-                    onPress={() => navigation.navigate("AccountSetting")}
-                  />
-                </View>
+              <TouchableOpacity
+                style={{
+                  width: "30%",
+                  height: 50,
+                }}
+                onPress={() => navigation.navigate("AccountSetting")}
+              >
+                <Back
+                  style={styles.back}
+                  onPress={() => navigation.navigate("AccountSetting")}
+                />
               </TouchableOpacity>
               {loaded ? <Text style={styles.text1}>Account Setting</Text> : ""}
             </View>
@@ -280,9 +295,7 @@ const styles = StyleSheet.create({
   },
   back: {
     alignSelf: "flex-start",
-
     position: "absolute",
-
     left: 16,
   },
   text3: {
@@ -296,7 +309,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 1,
     backgroundColor: "#D6D6D6",
-    marginTop: 30,
   },
   input: {
     borderWidth: 1,
