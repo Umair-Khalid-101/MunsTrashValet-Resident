@@ -25,7 +25,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "projectNumber": "47876847230",
       "googleServicesFile": "./google-services.json",
       "package": "com.muns.resident"
     },
@@ -34,7 +33,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "ccfa4181-9a91-4aed-9050-1e9686db97c5"
+        "projectId": "5066d38c-1d69-4bd1-a06d-8d26ba475c40"
       }
     }
   }

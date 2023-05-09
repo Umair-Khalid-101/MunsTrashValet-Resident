@@ -214,7 +214,7 @@ function SignUp(props) {
                         Alert.alert("Error", "Wrong Email or Password!");
                         setIsLoading(false);
                       });
-                    reset();
+                    // reset();
                     setIsLoading(false);
                   })
                   .catch((error) => {
