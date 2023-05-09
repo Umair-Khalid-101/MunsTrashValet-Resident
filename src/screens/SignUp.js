@@ -159,7 +159,7 @@ function SignUp(props) {
                   console.log(values);
 
                 const auth = getAuth();
-                const email = values.email;
+                const email = values.email.toLocaleLowerCase();
                 const password = values.password;
                 setIsLoading(true);
                 createUserWithEmailAndPassword(auth, email, password)
