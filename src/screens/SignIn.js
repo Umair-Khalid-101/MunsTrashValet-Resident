@@ -89,7 +89,7 @@ function SignIn(props) {
   const onSubmit = async (data) => {
     console.log(data);
     const auth = getAuth();
-    const email = data?.email;
+    const email = data?.email.toLowerCase();
     const password = data?.password;
     setIsLoading(true);
     await signInWithEmailAndPassword(auth, email, password)
