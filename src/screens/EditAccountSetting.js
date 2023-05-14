@@ -96,7 +96,7 @@ export default function EditAccountSetting() {
     }
 
     try {
-      console.log(storedCredentials?.email);
+      // console.log(storedCredentials?.email);
       const q = query(
         collection(db, "users"),
         where("email", "==", storedCredentials?.email)
@@ -104,7 +104,7 @@ export default function EditAccountSetting() {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot?.empty) {
-        console.log("NO DATA");
+        // console.log("NO DATA");
         setIsLoading(false);
         return;
       }
@@ -115,7 +115,7 @@ export default function EditAccountSetting() {
         docId = doc.id;
         User = doc.data();
         setUserData(User);
-        console.log("User:", User);
+        // console.log("User:", User);
         setIsLoading(false);
       });
     } catch (error) {
@@ -125,8 +125,8 @@ export default function EditAccountSetting() {
 
     setIsLoading(true);
     try {
-      console.log(data);
-      console.log("userData:", userData);
+      // console.log(data);
+      // console.log("userData:", userData);
       const washingtonRef = doc(db, "users", docId);
       await updateDoc(washingtonRef, {
         statename: data?.statename,
@@ -140,7 +140,7 @@ export default function EditAccountSetting() {
         !propertyname ? storedCredentials?.propertyname : propertyname
       }`;
       User.apartment = data.apartment;
-      console.log(User);
+      // console.log(User);
       AsyncStorage.setItem("userCredentials", JSON.stringify(User))
         .then(() => {
           setStoredCredentials(User);

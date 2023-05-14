@@ -87,7 +87,7 @@ function SignIn(props) {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
+    // console.log(data);
     const auth = getAuth();
     const email = data?.email.toLowerCase();
     const password = data?.password;
@@ -96,10 +96,10 @@ function SignIn(props) {
       .then(async (userCredential) => {
         const user = userCredential?.user;
         setUser(user);
-        console.log(`Signed In as ${user?.uid}`);
+        // console.log(`Signed In as ${user?.uid}`);
 
         try {
-          console.log(user?.email);
+          // console.log(user?.email);
           const q = query(
             collection(db, "users"),
             where("email", "==", user?.email)

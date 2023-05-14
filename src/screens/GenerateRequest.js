@@ -47,7 +47,7 @@ export default function GenerateRequest() {
   const [item, setItem] = useState(null);
   const [timeDiff, setTimeDiff] = useState(null);
 
-  console.log("ONROUTEVALET:", onRouteValet);
+  // console.log("ONROUTEVALET:", onRouteValet);
   const loadfonts = async () => {
     await Font.loadAsync({
       CircularStd: require("../../assets/CircularStd.ttf"),
@@ -86,7 +86,7 @@ export default function GenerateRequest() {
 
     try {
       valetQuerySnapshot?.forEach((doc) => {
-        console.log("OnRouteValetData-1: ", doc.data());
+        // console.log("OnRouteValetData-1: ", doc.data());
         doc.data();
         setonRouteValetData(doc.data());
       });
@@ -131,7 +131,7 @@ export default function GenerateRequest() {
       // console.log("NOTIFICATIONS-1:", notifications[0]);
       setItem(notifications[0]);
       const diff = diffInMinutes(notifications[0]?.time, Date.now());
-      console.log("Time Difference:", diff);
+      // console.log("Time Difference:", diff);
       setTimeDiff(diff);
       setonRouteValet(notifications[0]?.sentBy);
       setData(notifications);
@@ -177,10 +177,10 @@ export default function GenerateRequest() {
         });
       });
       let notifications = reverseArray(myData);
-      console.log("NOTIFICATIONS-1:", notifications[0]);
+      // console.log("NOTIFICATIONS-1:", notifications[0]);
       setItem(notifications[0]);
       const diff = diffInMinutes(notifications[0]?.time, Date.now());
-      console.log("Time Difference:", diff);
+      // console.log("Time Difference:", diff);
       setTimeDiff(diff);
       setonRouteValet(notifications[0]?.sentBy);
       setData(notifications);
@@ -188,7 +188,7 @@ export default function GenerateRequest() {
       setIsloading(false);
     } catch (error) {
       // Alert.alert(error);
-      console.log(error);
+      // console.log(error);
       setIsloading(false);
     }
   };
@@ -237,7 +237,10 @@ export default function GenerateRequest() {
       };
 
       await setDoc(doc(db, "request", timestamp.toString()), docRef);
-      await sendPushNotification(onRouteValetData?.NotifToken);
+      await sendPushNotification(
+        onRouteValetData?.expoToken ? onRouteValetData?.expoToken : "",
+        onRouteValetData?.NotifToken ? onRouteValetData?.NotifToken : ""
+      );
       setIsloading(false);
       navigation.navigate("PickupRequestSent");
     } catch (e) {
@@ -247,26 +250,25 @@ export default function GenerateRequest() {
     }
   };
 
-  const sendPushNotification = async (token) => {
-    //   const message = {
-    //     to: token,
-    //     priority: "high",
-    //     sound: "default",
-    //     title: "Muns TrashValet",
-    //     body: body,
-    //     data: { valet: body },
-    //   };
+  const sendPushNotification = async (expoToken, token) => {
+    const Iosmessage = {
+      to: expoToken,
+      priority: "high",
+      sound: "default",
+      title: "Muns Trash Valet",
+      body: `You have a new PickUp Request from\nProperty: ${storedCredentials?.propertyname}\nApartment: ${storedCredentials?.apartment}`,
+    };
 
-    //   // SEND NOTIFICATION
-    //   await fetch("https://exp.host/--/api/v2/push/send", {
-    //     method: "POST",
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Accept-encoding": "gzip, deflate",
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(message),
-    //   });
+    // SEND NOTIFICATION
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Iosmessage),
+    });
 
     const message = {
       to: token,

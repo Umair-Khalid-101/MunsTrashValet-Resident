@@ -47,20 +47,12 @@ function SignUp(props) {
   const [statename, setstatename] = useState("");
   const [propertyname, setpropertyname] = useState("");
   const [hidePassword, setHidePassword] = useState(true);
+  const [properties, setProperties] = useState(null);
 
   const toggleHidePassword = () => {
     setHidePassword(!hidePassword);
   };
 
-  const data = [
-    { value: "Independance Place" },
-    { value: "Lake Fairway" },
-    { value: "Sun Hollow" },
-    { value: "Ridgemar" },
-    { value: "Spring Park" },
-    { value: "Cliffside at Mountain Park" },
-    { value: "Desert Commons" },
-  ];
   const city = [{ value: "El Paso" }];
   const state = [{ value: "Texas" }];
 
@@ -89,7 +81,28 @@ function SignUp(props) {
   };
   useEffect(() => {
     loadfonts();
+    getProperties();
   }, []);
+
+  // GET PROPERTIES
+  const getProperties = async () => {
+    setIsLoading(true);
+    const q = query(collection(db, "general"));
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot?.empty) {
+      setIsLoading(false);
+      return;
+    }
+
+    querySnapshot?.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      // console.log("SignUp", doc.data()?.properties);c
+      setProperties(doc.data()?.properties);
+    });
+    setIsLoading(false);
+  };
 
   const saveUser = async (values) => {
     try {
@@ -102,7 +115,7 @@ function SignUp(props) {
         apartment: values.apartment,
         role: "resident",
       });
-      console.log("Document written with ID: ", docRef.id);
+      // console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -174,10 +187,10 @@ function SignUp(props) {
                       .then(async (userCredential) => {
                         const user = userCredential?.user;
                         setUser(user);
-                        console.log(`Signed In as ${user?.uid}`);
+                        // console.log(`Signed In as ${user?.uid}`);
 
                         try {
-                          console.log(user?.email);
+                          // console.log(user?.email);
                           const q = query(
                             collection(db, "users"),
                             where("email", "==", user?.email)
@@ -354,7 +367,7 @@ function SignUp(props) {
                     {loaded ? <Text style={styles.text3}>Property</Text> : ""}
                     <SelectList
                       setSelected={(val) => setpropertyname(val)}
-                      data={data}
+                      data={properties}
                       boxStyles={styles.input}
                       placeholder="Select Property"
                       inputStyles={{
@@ -397,7 +410,7 @@ function SignUp(props) {
           <View style={{ height: 40 }}></View>
         </SafeAreaView>
       )}
-      {isLoading && <Loader title={"Signing Up!"} />}
+      {isLoading && <Loader title={"Processing...!"} />}
     </>
   );
 }

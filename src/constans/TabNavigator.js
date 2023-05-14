@@ -14,7 +14,7 @@ import Notification from "../screens/Notification";
 
 const TabNavigator = () => {
   const { storedCredentials, updatingToken } = useStateContext();
-  console.log("STORED CREDENTIALS", storedCredentials);
+  // console.log("STORED CREDENTIALS", storedCredentials);
 
   const { registerForPushNotificationsAsync, handleNotificationResponse } =
     useNotifications();

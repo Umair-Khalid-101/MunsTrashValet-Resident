@@ -15,7 +15,7 @@ import {
 export const useNotifications = () => {
   const { token, setToken, user, storedCredentials, setUpdatingToken } =
     useStateContext();
-  console.log("USER:", storedCredentials);
+  // console.log("USER:", storedCredentials);
 
   const registerForPushNotificationsAsync = async () => {
     setUpdatingToken(true);
@@ -36,7 +36,7 @@ export const useNotifications = () => {
       try {
         if (Platform.OS === "ios") {
           token = (await Notifications.getExpoPushTokenAsync()).data;
-          console.log("Token: ", token);
+          // console.log("Token: ", token);
           setToken(token);
 
           const q = query(
@@ -54,11 +54,11 @@ export const useNotifications = () => {
 
           querySnapshot?.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
-            console.log(doc?.id, " => ", doc?.data());
+            // console.log(doc?.id, " => ", doc?.data());
             docid = doc?.id;
           });
 
-          console.log("Email: ", storedCredentials?.email);
+          // console.log("Email: ", storedCredentials?.email);
           const washingtonRef = doc(db, "users", docid);
           await updateDoc(washingtonRef, {
             expoToken: token,
@@ -66,7 +66,7 @@ export const useNotifications = () => {
           setUpdatingToken(false);
         } else {
           token = (await Notifications.getDevicePushTokenAsync()).data;
-          console.log("Token: ", token);
+          // console.log("Token: ", token);
           setToken(token);
 
           const q = query(
@@ -84,11 +84,11 @@ export const useNotifications = () => {
 
           querySnapshot?.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
-            console.log(doc?.id, " => ", doc?.data());
+            // console.log(doc?.id, " => ", doc?.data());
             docid = doc?.id;
           });
 
-          console.log("Email: ", storedCredentials?.email);
+          // console.log("Email: ", storedCredentials?.email);
           const washingtonRef = doc(db, "users", docid);
           await updateDoc(washingtonRef, {
             NotifToken: token,
